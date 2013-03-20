@@ -27,7 +27,7 @@
 			},
 			timeout					: null,						// the slider interval time between each medias
 			transition				: {							// save the transition options like duration, ease, etc...
-				callback				: 'fade',				// the name of the transition to use
+				callback				: null,					// the name of the transition to use
 				duration				: 1000,
 				ease					: ''
 			},
