@@ -5,9 +5,19 @@
  *
  * @author	Olivier Bossel (andes)
  * @created	21.02.2012
- * @updated 12.03.2013
- * @version	1.1
+ * @updated 08.04.2013
+ * @version	1.2
  */
+jQuery(function($) {
+	// check auto init :
+	$.fn.l = $.fn.livequery || $.fn.each;
+	if (typeof autoinit != 'undefined' && autoinit.slidizle) {
+		var settings = (typeof autoinit.slidizle == 'object') ? autoinit.slidizle : {};
+		$('[data-slidizle]').l(function() {
+			$(this).slidizle(settings);
+		});
+	}
+});
 ;(function($) {
 	
 	/**
@@ -806,10 +816,14 @@
 		 */
 		init : function(options) {
 			return this.each(function() {
-				// init plugin :
-				var p = new slidizle(this, options);
-				// save plugin :
-				$(this).data('slidizle', p);
+				// check if has already been inited :
+				if (typeof $(this).data('slidizle_plugin') != 'undefined')
+				{
+					// init plugin :
+					var p = new slidizle(this, options);
+					// save plugin :
+					$(this).data('slidizle_plugin', p);
+				}
 			});	
 		},
 		
@@ -911,7 +925,7 @@
 	function plugin_call(ref, method)
 	{
 		// get plugin :
-		var plugin = $(ref).data('slidizle');
+		var plugin = $(ref).data('slidizle_plugin');
 		// check plugin :
 		if (plugin) {
 			// call into plugin :
