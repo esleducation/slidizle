@@ -9,16 +9,6 @@
  * @version	1.2
  */
 jQuery(function($) {
-	// check auto init :
-	$.fn.l = $.fn.livequery || $.fn.each;
-	if (typeof autoinit != 'undefined' && autoinit.slidizle) {
-		var settings = (typeof autoinit.slidizle == 'object') ? autoinit.slidizle : {};
-		$('[data-slidizle]').l(function() {
-			$(this).slidizle(settings);
-		});
-	}
-});
-;(function($) {
 	
 	/**
 	 * Plugin :
@@ -946,4 +936,14 @@ jQuery(function($) {
 		}    
 	}
 
-})(jQuery);
+});
+jQuery(function($) {
+	// check auto init :
+	$.fn.l = $.fn.livequery || $.fn.each;
+	if (typeof autoinit != 'undefined' && autoinit.slidizle) {
+		var settings = (typeof autoinit.slidizle == 'object') ? autoinit.slidizle : {};
+		$('[data-slidizle]').l(function() {
+			$(this).slidizle(settings);
+		});
+	}
+});
