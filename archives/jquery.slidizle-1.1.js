@@ -817,7 +817,7 @@ jQuery(function($) {
 		init : function(options) {
 			return this.each(function() {
 				// check if has already been inited :
-				if (typeof $(this).data('slidizle_plugin') != 'undefined')
+				if (typeof $(this).data('slidizle_plugin') == 'undefined')
 				{
 					// init plugin :
 					var p = new slidizle(this, options);
