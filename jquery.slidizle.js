@@ -5,8 +5,8 @@
  *
  * @author	Olivier Bossel (andes)
  * @created	21.02.2012
- * @updated 08.04.2013
- * @version	1.2
+ * @updated 03.06.2013
+ * @version	1.2.2
  */
 jQuery(function($) {
 	
@@ -18,6 +18,12 @@ jQuery(function($) {
 		// vars :
 		this.settings = {
 			classes : {
+				content 				: 'slidizle-content', 		// class applied on content wrrapper
+				next 					: 'slidizle-next',			// class applied on next element
+				previous 				: 'slidizle-previous',		// class applied on previous element
+				navigation 				: 'slidizle-navigation',	// class applied on navigation element
+				timer 					: 'slidizle-timer',			// class applied on timer element
+				slide 					: 'slidizle-slide',			// class applied on each slide
 				play 					: 'play',					// the play class applied on the container
 				pause 		 			: 'pause',					// the pause class applied on the container
 				stop 					: 'stop',					// the stop class applied on the container
@@ -33,7 +39,7 @@ jQuery(function($) {
 			},
 			pauseOnOver				: false,					// set if the slider has to make pause on hover
 			autoPlay				: true,						// set if the slider has to play directly or not
-			timerInterval			: 1000/30,					// save the interval for the timer refreshing
+			timerInterval			: 1000,						// save the interval for the timer refreshing
 			onInit					: null,						// callback when the slider is inited
 			onClick					: null,						// callback when a slide is clicked
 			onChange				: null,						// callback when the slider change from one media to another
@@ -99,60 +105,77 @@ jQuery(function($) {
 		_this.$refs.next = $this.find('[data-slidizle-next]');
 		_this.$refs.timer = $this.find('[data-slidizle-timer]');
 		
+		// apply class :
+		if (_this.$refs.content) _this.$refs.content.addClass(_this._getSetting('classes.content'));
+		if (_this.$refs.next) _this.$refs.next.addClass(_this._getSetting('classes.next'));
+		if (_this.$refs.previous) _this.$refs.previous.addClass(_this._getSetting('classes.previous'));
+		if (_this.$refs.navigation) _this.$refs.navigation.addClass(_this._getSetting('classes.navigation'));
+		if (_this.$refs.timer) _this.$refs.timer.addClass(_this._getSetting('classes.timer'));
+
 		// get all medias in the slider :
-		var content_childs_type = _this.$refs.content.children(':first-child')[0]['nodeName'].toLowerCase();
-		_this.$refs.medias = _this.$refs.content.children(content_childs_type);
+		var $content_childs = _this.$refs.content.children(':first-child');
+		if ($content_childs.length > 0) {
+			var content_childs_type = $content_childs[0]['nodeName'].toLowerCase();
+			_this.$refs.medias = _this.$refs.content.children(content_childs_type);
+		}
 		
-		// adding click on slides :
-		_this.$refs.medias.click(function(e) {
-			// trigger an event :
-			$this.trigger('slidizle.click',[_this]);
-			// callback :
-			if (_this._getSetting('onClick')) _this._getSetting('onClick')(_this);
-		});
+		// check if are some medias :
+		if (_this.$refs.medias) {
+			// add class on medias :
+			_this.$refs.medias.addClass(_this._getSetting('classes.slide'));
+
+			// adding click on slides :
+			_this.$refs.medias.click(function(e) {
+				// trigger an event :
+				$this.trigger('slidizle.click',[_this]);
+				// callback :
+				if (_this._getSetting('onClick')) _this._getSetting('onClick')(_this);
+			});
+			
+			// creating data :
+			_this.total = _this.$refs.medias.length;
+			_this.current_index = 0;
 		
-		// creating data :
-		_this.total = _this.$refs.medias.length;
-		_this.current_index = 0;
+			// init navigation :
+			if (_this.$refs.navigation.length>=1) _this._initNavigation();
+			_this.initPreviousNextNavigation();
 		
-		// init navigation :
-		if (_this.$refs.navigation.length>=1) _this._initNavigation();
-		_this.initPreviousNextNavigation();
-		
+			// hiding all medias :
+			if (_this._getSetting('transition') && _this._isNativeTransition(_this._getSetting('transition.callback'))) _this.$refs.medias.hide();
+
+			// check if a content is already active :
+			var $active_slide = _this.$refs.medias.filter('.active:first');
+			if ($active_slide.length >= 1) {
+				// go to specific slide :
+				_this.current_index = $active_slide.index();
+			}
+				
+			// change medias for the first time :
+			_this._changeMedias();	
+
+			// check if pauseOnOver is set to true :
+			if (_this._getSetting('pauseOnOver')) {
+				// add hover listener :
+				$this.hover(function(e) {
+					// pause :
+					_this.pause();
+					// update isOver state :
+					_this.isOver = true;
+				}, function(e) {
+					// play :
+					_this.play();
+					// update isOver state :
+					_this.isOver = false;
+				});
+			}
+
+			// play :
+			if (_this._getSetting('autoPlay') && _this.$refs.medias.length > 1) _this.play();
+
+		}
+
 		// apply class :
 		$this.addClass(_this._getSetting('classes.slider'));
-		
-		// hiding all medias :
-		if (_this._getSetting('transition') && _this._isNativeTransition(_this._getSetting('transition.callback'))) _this.$refs.medias.hide();
-		
-		// check if a content is already active :
-		var $active_slide = _this.$refs.medias.filter('.active:first');
-		if ($active_slide.length >= 1) {
-			// go to specific slide :
-			_this.current_index = $active_slide.index();
-		}
-			
-		// change medias for the first time :
-		_this._changeMedias();	
-
-		// check if pauseOnOver is set to true :
-		if (_this._getSetting('pauseOnOver')) {
-			// add hover listener :
-			$this.hover(function(e) {
-				// pause :
-				_this.pause();
-				// update isOver state :
-				_this.isOver = true;
-			}, function(e) {
-				// play :
-				_this.play();
-				// update isOver state :
-				_this.isOver = false;
-			});
-		}
-
-		// play :
-		if (_this._getSetting('autoPlay') && _this.$refs.medias.length > 1) _this.play();
 
 		// check the on init :
 		if (_this._getSetting('onInit')) _this._getSetting('onInit')(_this);
@@ -534,16 +557,22 @@ jQuery(function($) {
 		_this.$refs.current = _this.$refs.content.children(':eq('+_this.current_index+')');
 
 		// managing active class on the navigation :
-		var current_slide_id = _this.$refs.current.attr('data-slidizle-slide-id'),
-			current_navigation_by_slide_id = _this.$refs.navigation.children('[data-slidizle-slide-id="'+current_slide_id+'"]');
-		if (current_slide_id && current_navigation_by_slide_id)
-		{
-			_this.$refs.navigation.children().removeClass(_this._getSetting('classes.active'));
-			current_navigation_by_slide_id.addClass(_this._getSetting('classes.active'));
-		} else {
-			_this.$refs.navigation.children().removeClass(_this._getSetting('classes.active'));
-			_this.$refs.navigation.children(':eq('+_this.current_index+')').addClass(_this._getSetting('classes.active'));
-		}
+		var current_slide_id = _this.$refs.current.attr('data-slidizle-slide-id');
+
+		_this.$refs.navigation.each(function() {
+			var $nav = $(this),
+				current_navigation_by_slide_id = $(this).children('[data-slidizle-slide-id="'+current_slide_id+'"]');
+
+			if (current_slide_id && current_navigation_by_slide_id)
+			{
+				$nav.children().removeClass(_this._getSetting('classes.active'));
+				current_navigation_by_slide_id.addClass(_this._getSetting('classes.active'));
+			} else {
+				$nav.children().removeClass(_this._getSetting('classes.active'));
+				$nav.children(':eq('+_this.current_index+')').addClass(_this._getSetting('classes.active'));
+			}
+
+		});
 
 		// reset the timeout :
 		var t = _this.$refs.current.data('slide-timeout') || _this._getSetting('timeout');
@@ -659,6 +688,7 @@ jQuery(function($) {
 
 			// init the timer :
 			if (_this._getSetting('timeout') && _this.$refs.medias.length > 1 && _this.isPlaying && !_this.timer) {
+				clearInterval(_this.timer);
 				_this.timer = setInterval(function() {
 					_this._tick();
 				}, _this._getSetting('timerInterval'));
