@@ -1,4 +1,4 @@
-# jQuery.slidizle (1.3.23)
+# jQuery.slidizle (1.3.22)
 
 This plugin allows you to create fully customizable slider. Slidizle is focused on managing your slider by just applying some classes on each of your html elements so you can have the full control over your slider look.
 
@@ -129,20 +129,12 @@ There classes describe the state of your slider
 
 * __active__ 		: applied on the active slide
 * __loading__ 		: applied on the container and the slide that is currently loading
-* __forward__ 		: applied on the container when go forward
-* __backward__ 		: applied on the container when go backward
 * __disabled__ 		: applied on the next and previous element when need to be disabled
 * __played__ 		: applied on the container when the slider is in play mode
 * __paused__ 		: applied on the container when the slider is in pause mode
 * __stoped__		: applied on the container when the slider is in stop mode
 * __slide-{index}__ 	: applied on the container (slide-0, slide-1, etc...)
 * __loaded-slide-{index}__ 	: same as slide-{index} but applied only when the slide is loaded
-* __first__ 		: applied on the first slide
-* __last__			: applied on the last slide
-* __previous__ 		: applied on the previous slide
-* __next__ 			: applied on the next slide
-* __before-active__ : applied on all the slides that are before the active one
-* __after-active__ 	: opposite of before-active
 
 
 ## Options
@@ -151,7 +143,7 @@ Here's the list of all the available options :
 
 ```javascript
 classes : {
-				
+	
 	// class applied on content wrrapper
 	content 				: 'slidizle-content', 	
 
@@ -161,24 +153,6 @@ classes : {
 	// class applied on previous navigation element
 	previous 				: 'slidizle-previous',			
 	
-	// class applied on all slides that are before the active one
-	beforeActive 			: 'before-active',
-
-	// class applied on all slides that are after the active one
-	afterActive 			: 'after-active',
-
-	// class applied on the next active slide
-	nextActive 				: 'next',
-
-	// class applied on the previous active slide
-	previousActive 			: 'previous',
-
-	// class applied on container when the slider is in forward mode
-	forward 				: 'forward',
-
-	// class applied on container when the slider is in backward mode
-	backward 				: 'backward',			
-
 	// class applied on navigation element
 	navigation 				: 'slidizle-navigation',			
 	
@@ -195,7 +169,7 @@ classes : {
 	first 					: 'first',
 
 	// the class applied on container when the slider is at his last slide
-	last 					: 'last',
+	last 					: 'last',		
 
 	// the play class applied on the container
 	play 					: 'played',				
@@ -280,7 +254,7 @@ onPlay					: null,
 onPause				: null,						
 
 // callback when the slider resume after a pause
-onResume 				: null			
+onResume 				: null		
 ```
 
 > All the options can be set directly on the DOM element using the pattern : __data-overlizle-{option-separated-with-dash}="{value}"__

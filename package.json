@@ -1,7 +1,7 @@
 {
 	"name": "jquery.slidizle",
 	"description": "jQuery plugin to create fully customizable sliders",
-	"version": "1.3.23",
+	"version": "1.3.22",
 	"main": "js/jquery.slidizle.js",
 	"repository": {
 		"type": "git",
